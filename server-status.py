@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
-#######################################################################
-### Server-Status
-# Description:
-# A script that monitors and extracts URLs from Apache server-status.
-### Version:
-# 0.2
-### Homepage:
+# Server-Status
+# Overview:
+# An Apache server-status monitoring and URL extraction script.
 # https://github.com/Aman-SecurityKnock/server-status
-## Author:
-# Aman
 #######################################################################
 
 # Modules
@@ -18,11 +12,11 @@ import sqlite3
 import calendar
 import argparse
 
-# External modules
+# Let's import some external Libraries!
 import requests
 from bs4 import BeautifulSoup
 
-# Disable SSL warnings
+# I'm a pro at disabling SSL warnings, watch me!
 try:
     import requests.packages.urllib3
     requests.packages.urllib3.disable_warnings()
@@ -73,11 +67,8 @@ output_path = args.output_path if args.output_path else ''
 enable_full_logging = args.enable_full_logging
 enable_debug = args.enable_debug
 
-
+#Let's add some color to our lives with this coloring class!
 class tcolor:
-    """
-    A simple coloring class.
-    """
     endcolor = '\033[0m'
     red = '\033[31m'
     green = '\033[32m'
@@ -85,57 +76,24 @@ class tcolor:
     yellow = '\033[93m'
     light_blue = '\033[96m'
 
-
+#Time for some exception handing, because we're pros at it!
 def Exception_Handler(e):
-    """
-    Catches exceptions, and shows it on screen
-    when --debug is True.
-    """
     global enable_debug
     if enable_debug is True:
         print('%s%s%s' % (tcolor.red, str(e), tcolor.endcolor))
     return(0)
 
-
+#Let's handle those requests like a boss with this Request Handler class!
 class Request_Handler():
-    """
-    Handles anything related to requests.
-    Manually modify the __init__ variables for customzing.
-    """
     def __init__(self):
         self.user_agent = 'server-status (https://github.com/Aman-SecurityKnock/server-status)'
         self.timeout = '3'
         self.origin_ip = '127.0.0.1'
         self.additional_headers = {}
-        # Fill this dict with additional headers if needed.
-        # It will work normally by default.
 
     def send_request(self, url):
-        """
-        Sends requests.
-        """
         headers = {"User-Agent": self.user_agent, 'Accept': '*/*'}
         headers.update(self.additional_headers)
-        """
-        # I will leave these evil tricks for you.
-        # Uncomment these lines to activate it.
-
-        ## Tick #1: sending Host header as localhost
-        #localhost_host_header = {"Host": "localhost"}
-        #headers.update(localhost_host_header)
-        ## Trick #2: sending Host header as 127.0.0.1
-        #ipv4_localhost_host_header = {"Host": "127.0.0.1"}
-        #headers.update(ipv4_localhost_host_header)
-        ## Trick #3: sending Host header as ::1
-        #ipv6_localhost_host_header = {"Host": "::1"}
-        #headers.update(ipv6_localhost_host_header)
-        ## Trick #4: Mix of changes to configuration-related HTTP Headers.
-        #conf_breaking_headers = {"X-Originating-IP": self.origin_ip,
-        #                         "X-Forwarded-For": self.origin_ip,
-        #                         "X-Remote-IP": self.origin_ip,
-        #                         "X-Remote-Addr": self.origin_ip}
-        #headers.update(conf_breaking_headers)
-        """
 
         try:
             req = requests.get(url,
@@ -151,14 +109,9 @@ class Request_Handler():
 
 
 class Response_Handler():
-    """
-    Handles validation and parsing of response.
-    """
 
     def validate_response(self, response):
-        """
-        Validates the response, and checks whether the output is valid.
-        """
+        
         valid_patterns = ['<h1>Apache Server Status for']
         for pattern in valid_patterns:
             if pattern in response:
@@ -167,15 +120,11 @@ class Response_Handler():
         return(False)
 
     def parse_response(self, response):
-        """
-        Parses Apache serve-status response.
-        """
         VHOST_List = []
         REQUEST_URI_List = []
         FULL_URL_List = []
         CLIENT_IP_ADDRESS_List = []
 
-        # URL-related.
         soup = BeautifulSoup(response, 'lxml')
         try:
             table_index_id = 0
@@ -208,7 +157,6 @@ class Response_Handler():
                     REQUEST_URI_List.append(REQUEST_URI)
                     FULL_URL_List.append(FULL_URL)
 
-                    # Client-related.
                     try:
                         CLIENT_IP_ADDRESS = soup.findChildren('table')[table_index_id].findChildren('tr')[_].findChildren('td')[CLIENT_IP_ADDRESS_index_id].getText()
                     except:
@@ -224,9 +172,7 @@ class Response_Handler():
 
 
 def output_to_file(output_data):
-    """
-    Outputs identified URLs into a newline-delimited file.
-    """
+    
     try:
         o_file = open(output_path, 'a')
         o_file.write(str(output_data) + '\n')
@@ -347,7 +293,6 @@ def main(url, full_logging=False):
                     DBHandler().Add_Identified_Client(parsed_output['CLIENT_IP_ADDRESS'][_])
                     print('%s[New Client]: %s%s' % (tcolor.purple, parsed_output['CLIENT_IP_ADDRESS'][_], tcolor.endcolor))
 
-            # Full Logging, if enabled:
             if (full_logging is True):
                 for _ in range(len(parsed_output['FULL_URL'])):
                     Timestamp = calendar.timegm(time.gmtime())
@@ -375,7 +320,7 @@ def main(url, full_logging=False):
 
         st = int(sleeping_time)
         while st != 0:
-            # Display second in real time one the on liner (not \n everytime)
+            
             time.sleep(1)
             print("\033[34m", end="")
             print(f"New request in {st} seconds...", end="")
