@@ -1,6 +1,8 @@
 # Server-Status:
 An Apache server-status monitoring script exploits publicly accessible instances of Apache server-status to monitor and extract URL requests and clients connected to the service.
 
+![Apache-Server-status](https://github.com/user-attachments/assets/2ade7f4c-81f9-4390-a276-271f138e1b7a)
+
 
 # Apache Server-Status:
 http://example.com/server-status is the default website for Apache server-status monitoring. Server-status instances are normally inaccessible to IP addresses outside the local network. However, if misconfigured, the server-status page may be publicly accessible, allowing anyone to view a significant amount of server status data.
